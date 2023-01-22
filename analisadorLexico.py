@@ -28,6 +28,7 @@ class Buffer():
         file.close()
 
 #--------------------------------
+
 class LexicalAnalyzer():
     def tokenize(self, code):
         rules = [ 
@@ -56,7 +57,7 @@ class LexicalAnalyzer():
             ('MINUS', r'-'),            # -
             ('MULT', r'\*'),            # *
             ('DIV', r'\/'),             # /
-            ('ID', r'[a-zA-Z]\w*'),     # IDENTIFIERS
+            ('ID', r'[a-zA-Z]\w*'),     # IDENTIFIERS IDs
             ('INTEGER_CONST', r'\d(\d)*'),          # int constante inteira
             ('MISMATCH', r'.'),         # outro caracter
         ]
@@ -70,17 +71,12 @@ class LexicalAnalyzer():
         row = []
         column = []
 
-        # It analyzes the code to find the lexemes and their respective Tokens
+        # bloco abaixo analisa o codigo e acha os lexemas e seus respectivos tokens
         for m in re.finditer(tokens_join, code):
             tipo_token = m.lastgroup
             lexema_token = m.group(tipo_token)
 
-            if tipo_token == 'NEWLINE':
-                lin_start = m.end()
-                self.lin_num += 1
-            elif tipo_token == 'SKIP':
-                continue
-            elif tipo_token == 'MISMATCH':
+            if tipo_token == 'MISMATCH': # caracter errado
                 raise RuntimeError('%r unexpected on line %d' % (lexema_token, self.lin_num))
             else:
                     col = m.start() - lin_start
@@ -88,7 +84,7 @@ class LexicalAnalyzer():
                     token.append(tipo_token)
                     lexeme.append(lexema_token)
                     row.append(self.lin_num)
-                    # To print information about a Token
+                    # printando informacao sobre um token
                     print('Token = {0}, Lexeme = \'{1}\', Row = {2}, Column = {3}'.format(tipo_token, lexema_token, self.lin_num, col))
 
         return token, lexeme, row, column
@@ -98,13 +94,13 @@ if __name__ == '__main__':
     Buffer = Buffer()
     Analyzer = LexicalAnalyzer()
 
-    # Lists for every list returned list from the function tokenize
+    # Lists for every list returned list from the function tokenize 
     token = []
     lexeme = []
     row = []
     column = []
 
-    # Tokenize and reload of the buffer
+    # tokeniza e recarrega o buffer
     for i in Buffer.load_buffer():
         t, lex, lin, col = Analyzer.tokenize(i)
         token += t
